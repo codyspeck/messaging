@@ -1,8 +1,6 @@
 ﻿namespace Messaging;
 
-internal class Envelope(string body, Type messageType)
+internal class Envelope(object message)
 {
-    public string Body { get; } = body;
-
-    public Type MessageType { get; } = messageType;
+    public object Message { get; } = message;
 }

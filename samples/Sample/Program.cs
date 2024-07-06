@@ -4,7 +4,9 @@ using Messaging.Sqs;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMessaging(messaging => messaging
-    .AddSqs(sqs => sqs));
+    .AddSqs(sqs => sqs
+        .ProduceToSqsQueue("product-messages", producer => producer
+            .HandlesMessageType<ProductCreated>())));
 
 var app = builder.Build();
 

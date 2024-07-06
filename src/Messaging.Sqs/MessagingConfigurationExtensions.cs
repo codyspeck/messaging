@@ -5,6 +5,10 @@ public static class MessagingConfigurationExtensions
     public static MessagingConfiguration AddSqs(this MessagingConfiguration messagingConfiguration,
         Action<SqsTransportConfiguration> configurator)
     {
+        var sqsTransportConfiguration = new SqsTransportConfiguration();
+
+        configurator(sqsTransportConfiguration);
+        
         return messagingConfiguration;
     }
     
