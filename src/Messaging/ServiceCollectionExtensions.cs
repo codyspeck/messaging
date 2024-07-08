@@ -11,8 +11,10 @@ public static class ServiceCollectionExtensions
 
         configurator(configuration);
 
+        services.AddSingleton<IEnveloper, Enveloper>();
         services.AddSingleton<IMessageBus, MessageBus>();
         services.AddSingleton<IMessageSerializer, DefaultMessageSerializer>();
+        services.AddSingleton<IRouter, Router>();
         
         return services;
     }

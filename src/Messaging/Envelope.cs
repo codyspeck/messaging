@@ -1,6 +1,10 @@
 ﻿namespace Messaging;
 
-internal class Envelope(object message)
+internal class Envelope(string messageBody, string? explicitDestination, Type messageType)
 {
-    public object Message { get; } = message;
+    public string MessageBody { get; } = messageBody;
+
+    public string? ExplicitDestination { get; } = explicitDestination;
+
+    public Type MessageType { get; } = messageType;
 }

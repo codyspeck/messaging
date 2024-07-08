@@ -2,5 +2,5 @@
 
 internal interface ITransport
 {
-    Task SendAsync(object message);
+    Task SendAsync(Envelope envelope);
 }
