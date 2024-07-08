@@ -1,6 +1,11 @@
 @Sample_HostAddress = http://localhost:5077
 
-GET {{Sample_HostAddress}}/weatherforecast/
+POST {{Sample_HostAddress}}/products
 Accept: application/json
+Content-Type: application/json
+
+{
+  "sku": "WX100"
+}
 
 ###

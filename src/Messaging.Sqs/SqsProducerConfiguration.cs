@@ -4,20 +4,30 @@ public class SqsProducerConfiguration
 {
     private readonly HashSet<Type> _messageTypes = [];
     
-    internal string Queue { get; }
+    internal string QueueName { get; }
+
+    internal string? QueueArn { get; private set; }
 
     internal int BatchSize { get; private set; } = 10;
 
     internal int MaxDegreeOfParallelism { get; private set; } = 1;
 
+    internal bool ShouldCreateOnStartupInDevelopment { get; private set; } = false;
+
     internal IEnumerable<Type> MessageTypes => _messageTypes;
     
-    internal SqsProducerConfiguration(string queue)
+    internal SqsProducerConfiguration(string queueName)
     {
-        Queue = queue;
+        QueueName = queueName;
     }
 
-    public SqsProducerConfiguration HandlesMessageType<TMessage>()
+    public SqsProducerConfiguration CreateOnStartupInDevelopment()
+    {
+        ShouldCreateOnStartupInDevelopment = true;
+        return this;
+    }
+    
+    public SqsProducerConfiguration Handles<TMessage>()
     {
         _messageTypes.Add(typeof(TMessage));
         return this;
@@ -32,6 +42,12 @@ public class SqsProducerConfiguration
     public SqsProducerConfiguration WithMaxDegreeOfParallelism(int maxDegreeOfParallelism)
     {
         MaxDegreeOfParallelism = maxDegreeOfParallelism;
+        return this;
+    }
+
+    internal SqsProducerConfiguration WithQueueArn(string queueArn)
+    {
+        QueueArn = queueArn;
         return this;
     }
 }
