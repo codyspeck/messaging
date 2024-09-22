@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EDB3B252-A54D-42FB-9C36-081433A2C294}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging", "src\Messaging\Messaging.csproj", "{53059B8C-F84C-4912-90D1-7219F4B3F7A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Kafka", "src\Messaging.Kafka\Messaging.Kafka.csproj", "{F7F6B1B6-9B46-4AF2-A151-8610EF877A09}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53059B8C-F84C-4912-90D1-7219F4B3F7A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53059B8C-F84C-4912-90D1-7219F4B3F7A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53059B8C-F84C-4912-90D1-7219F4B3F7A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53059B8C-F84C-4912-90D1-7219F4B3F7A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7F6B1B6-9B46-4AF2-A151-8610EF877A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7F6B1B6-9B46-4AF2-A151-8610EF877A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7F6B1B6-9B46-4AF2-A151-8610EF877A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7F6B1B6-9B46-4AF2-A151-8610EF877A09}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53059B8C-F84C-4912-90D1-7219F4B3F7A0} = {EDB3B252-A54D-42FB-9C36-081433A2C294}
+		{F7F6B1B6-9B46-4AF2-A151-8610EF877A09} = {EDB3B252-A54D-42FB-9C36-081433A2C294}
+	EndGlobalSection
+EndGlobal
