@@ -2,15 +2,15 @@
 
 public interface IConsumer
 {
-    Task ConsumeAsync(Yeet message);
+    Task ConsumeAsync(object message, IMessageContext context);
 }
 
 public interface IConsumer<in TMessage> : IConsumer
 {
-    Task ConsumeAsync(TMessage message);
+    Task ConsumeAsync(TMessage message, IMessageContext context);
 
-    Task IConsumer.ConsumeAsync(object message)
+    Task IConsumer.ConsumeAsync(object message, IMessageContext context)
     {
-        return ConsumeAsync(message);
+        return ConsumeAsync((TMessage)message, context);
     }
 }

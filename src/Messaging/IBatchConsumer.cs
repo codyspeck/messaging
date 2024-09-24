@@ -2,15 +2,15 @@
 
 public interface IBatchConsumer
 {
-    Task ConsumeAsync(IEnumerable<(object, object)> messages);
+    Task ConsumeAsync(IEnumerable<(object Message, IMessageContext Context)> messages);
 }
 
 public interface IBatchConsumer<TMessage> : IBatchConsumer
 {
-    Task ConsumeAsync(IEnumerable<(TMessage, object)> messages);
+    Task ConsumeAsync(IEnumerable<(TMessage message, IMessageContext context)> messages);
 
-    Task IBatchConsumer.ConsumeAsync(IEnumerable<(object, object)> messages)
+    Task IBatchConsumer.ConsumeAsync(IEnumerable<(object Message, IMessageContext Context)> messages)
     {
-        return ConsumeAsync(messages.Select(message => ((TMessage)message.Item1, message.Item2)));
+        return ConsumeAsync(messages.Select(message => ((TMessage)message.Message, message.Context)));
     }
 }

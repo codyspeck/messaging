@@ -1,14 +1,21 @@
 ﻿namespace Messaging.Kafka;
 
-public class ConsumeConfigurationBuilder
+public class ListenerConfigurationBuilder
 {
     private readonly List<string> _topics = [];
+    private Type? _foreignMessageType;
 
-    internal ConsumeConfigurationBuilder()
+    internal ListenerConfigurationBuilder()
     {
     }
 
-    public ConsumeConfigurationBuilder WithTopic(string topic)
+    public ListenerConfigurationBuilder CastMessagesTo<TMessage>()
+    {
+        _foreignMessageType = typeof(TMessage);
+        return this;
+    }
+    
+    public ListenerConfigurationBuilder Topic(string topic)
     {
         _topics.Add(topic);
         return this;
