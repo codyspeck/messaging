@@ -1,28 +1,30 @@
 ﻿namespace Messaging;
 
-public class ConsumerConfiguration<TConsumer> where TConsumer : IConsumer
+public class ConsumerConfiguration
 {
     private int _boundedCapacity = 1;
     private int _maxDegreeOfParallelism = 1;
+    private readonly Type _consumerType;
     private readonly List<Type> _messageTypes = [];
 
-    internal ConsumerConfiguration()
+    internal ConsumerConfiguration(Type consumerType)
     {
+        _consumerType = consumerType;
     }
 
-    public ConsumerConfiguration<TConsumer> BoundedCapacity(int boundedCapacity)
+    public ConsumerConfiguration BoundedCapacity(int boundedCapacity)
     {
         _boundedCapacity = boundedCapacity;
         return this;
     }
     
-    public ConsumerConfiguration<TConsumer> Handles<TMessage>()
+    public ConsumerConfiguration Handles<TMessage>()
     {
         _messageTypes.Add(typeof(TMessage));
         return this;
     }
 
-    public ConsumerConfiguration<TConsumer> MaxDegreeOfParallelism(int maxDegreeOfParallelism)
+    public ConsumerConfiguration MaxDegreeOfParallelism(int maxDegreeOfParallelism)
     {
         _maxDegreeOfParallelism = maxDegreeOfParallelism;
         return this;

@@ -12,8 +12,6 @@ public static class ServiceCollectionExtensions
 
         configurator(configuration);
         
-        
-        
         return services;
     }
 }

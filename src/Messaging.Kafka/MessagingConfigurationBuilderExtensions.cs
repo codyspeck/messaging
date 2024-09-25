@@ -6,8 +6,10 @@ public static class MessagingConfigurationBuilderExtensions
         this MessagingConfiguration messagingConfiguration,
         Action<KafkaConfigurationBuilder> configurator)
     {
-        var kafkaConfigurationBuilder = new KafkaConfigurationBuilder();
+        var kafkaConfigurationBuilder = new KafkaConfigurationBuilder(messagingConfiguration);
+        
         configurator(kafkaConfigurationBuilder);
+        
         return messagingConfiguration;
     }
 }

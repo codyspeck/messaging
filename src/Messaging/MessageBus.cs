@@ -1,9 +1,10 @@
-﻿namespace Messaging;
+﻿using Messaging.Outgoing;
 
-internal class MessageBus(IEnumerable<ITransport> transports) : IMessageBus
+namespace Messaging;
+
+internal class MessageBus(OutgoingMessageRouter registry) : IMessageBus
 {
-    public async Task SendAsync(object message)
-    {
-        await Task.WhenAll(transports.Select(transport => transport.SendAsync(message)));
-    }
+    public async Task SendAsync(OutgoingMessageEnvelope envelope) => await registry
+        .Route(envelope)
+        .SendAsync(envelope);
 }

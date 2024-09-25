@@ -2,12 +2,12 @@
 
 internal class MessageRegistry
 {
-    private readonly Dictionary<string, Type> _routingKeyToMessageType = [];
-    private readonly Dictionary<Type, string> _messageTypeToRoutingKey = [];
+    private readonly Dictionary<string, Type> _types = [];
+    private readonly Dictionary<Type, string> _identifiers = [];
 
-    public void Add<TMessage>(string routingKey)
+    public void Add<TMessage>(string messageTypeIdentifier)
     {
-        _routingKeyToMessageType.Add(routingKey, typeof(TMessage));
-        _messageTypeToRoutingKey.Add(typeof(TMessage), routingKey);
+        _types.Add(messageTypeIdentifier, typeof(TMessage));
+        _identifiers.Add(typeof(TMessage), messageTypeIdentifier);
     }
 }

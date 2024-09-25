@@ -3,7 +3,7 @@
 public class ProducerConfigurationBuilder
 {
     private readonly string _topic;
-    private readonly List<Type> _messageTypes = [];
+    private readonly HashSet<Type> _messageTypes = [];
     
     internal ProducerConfigurationBuilder(string topic)
     {
@@ -15,4 +15,13 @@ public class ProducerConfigurationBuilder
         _messageTypes.Add(typeof(TMessage));
         return this;
     }
+
+    internal ProducerConfiguration Build() => new(_topic, _messageTypes);
+}
+
+internal class ProducerConfiguration(string topic, HashSet<Type> messageTypes)
+{
+    public string Topic { get; } = topic;
+
+    public HashSet<Type> MessageTypes { get; } = messageTypes;
 }

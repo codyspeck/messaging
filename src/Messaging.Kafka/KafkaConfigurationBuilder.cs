@@ -1,22 +1,47 @@
-﻿namespace Messaging.Kafka;
+﻿using Confluent.Kafka;
+using Messaging.Kafka.Outgoing;
+using Messaging.Outgoing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Messaging.Kafka;
 
 public class KafkaConfigurationBuilder
 {
-    internal KafkaConfigurationBuilder()
+    private readonly MessagingConfiguration _messagingConfiguration;
+    
+    internal KafkaConfigurationBuilder(MessagingConfiguration messagingConfiguration)
     {
+        _messagingConfiguration = messagingConfiguration;
     }
 
-    public KafkaConfigurationBuilder ConsumeFrom(Action<ListenerConfigurationBuilder> configurator)
+    public KafkaConfigurationBuilder SendTo(
+        string topic,
+        Func<ProducerConfigurationBuilder, ProducerConfigurationBuilder> configurator)
     {
-        var builder = new ListenerConfigurationBuilder();
-        configurator(builder);
+        var producerConfiguration = configurator(new ProducerConfigurationBuilder(topic))
+            .Build();
+        
+        _messagingConfiguration.Services.TryAddSingleton<KafkaMessageSender>();
+        _messagingConfiguration.Services.AddSingleton<OutgoingPipeline>(services =>
+            CreateOutgoingPipeline(services, producerConfiguration));
+
         return this;
     }
 
-    public KafkaConfigurationBuilder ProduceTo(string topic, Action<ProducerConfigurationBuilder> configurator)
+    private static OutgoingPipeline CreateOutgoingPipeline(
+        IServiceProvider services,
+        ProducerConfiguration producerConfiguration)
     {
-        var builder = new ProducerConfigurationBuilder(topic);
-        configurator(builder);
-        return this;
+        var clientConfiguration = services.GetRequiredService<ClientConfig>();
+
+        var producer = new ProducerBuilder<Null, string>(clientConfiguration)
+            .Build();
+
+        var messageSender = new KafkaMessageSender(
+            producer,
+            new KafkaMessageSenderOptions(producerConfiguration.Topic));
+        
+        return new OutgoingPipeline(messageSender, new OutgoingPipelineOptions(100, producerConfiguration.MessageTypes));
     }
 }

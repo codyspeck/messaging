@@ -5,6 +5,7 @@ namespace Messaging;
 public class MessagingConfiguration
 {
     private readonly MessageRegistry _messageRegistry = new();
+    private readonly List<ConsumerConfiguration> _consumerConfigurations = [];
     
     internal MessagingConfiguration(IServiceCollection services)
     {
@@ -13,10 +14,12 @@ public class MessagingConfiguration
 
     internal IServiceCollection Services { get; }
 
-    public MessagingConfiguration Consumer<TConsumer>(Action<ConsumerConfiguration<TConsumer>> configurator)
+    public MessagingConfiguration Consumer<TConsumer>(Action<ConsumerConfiguration> configurator)
         where TConsumer : IConsumer
     {
-        configurator(new ConsumerConfiguration<TConsumer>());
+        var consumerConfiguration = new ConsumerConfiguration(typeof(TConsumer));
+        configurator(consumerConfiguration);
+        _consumerConfigurations.Add(consumerConfiguration);
         return this;
     }
     

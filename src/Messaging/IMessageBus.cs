@@ -1,6 +1,8 @@
-﻿namespace Messaging;
+﻿using Messaging.Outgoing;
+
+namespace Messaging;
 
 public interface IMessageBus
 {
-    Task SendAsync(object message);
+    Task SendAsync(OutgoingMessageEnvelope envelope);
 }
