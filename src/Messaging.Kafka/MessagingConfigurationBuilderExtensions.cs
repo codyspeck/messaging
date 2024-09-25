@@ -2,12 +2,12 @@
 
 public static class MessagingConfigurationBuilderExtensions
 {
-    public static MessagingConfigurationBuilder AddKafka(
-        this MessagingConfigurationBuilder messagingConfigurationBuilder,
+    public static MessagingConfiguration AddKafka(
+        this MessagingConfiguration messagingConfiguration,
         Action<KafkaConfigurationBuilder> configurator)
     {
         var kafkaConfigurationBuilder = new KafkaConfigurationBuilder();
         configurator(kafkaConfigurationBuilder);
-        return messagingConfigurationBuilder;
+        return messagingConfiguration;
     }
 }

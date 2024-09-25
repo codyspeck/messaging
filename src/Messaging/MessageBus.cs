@@ -1,9 +1,9 @@
 ﻿namespace Messaging;
 
-internal class MessageBus : IMessageBus
+internal class MessageBus(IEnumerable<ITransport> transports) : IMessageBus
 {
-    public Task SendAsync(object message)
+    public async Task SendAsync(object message)
     {
-        throw new NotImplementedException();
+        await Task.WhenAll(transports.Select(transport => transport.SendAsync(message)));
     }
 }

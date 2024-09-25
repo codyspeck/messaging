@@ -6,11 +6,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMessaging(
         this IServiceCollection services,
-        Action<MessagingConfigurationBuilder> configurator)
+        Action<MessagingConfiguration> configurator)
     {
-        var builder = new MessagingConfigurationBuilder(services);
+        var configuration = new MessagingConfiguration(services);
 
-        configurator(builder);
+        configurator(configuration);
+        
+        
         
         return services;
     }
