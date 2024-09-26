@@ -1,6 +1,6 @@
 ﻿namespace Messaging.Outgoing;
 
-public interface IMessageSender
+internal interface IMessageSender
 {
     Task SendAsync(IEnumerable<OutgoingMessageEnvelope> envelopes);
 }

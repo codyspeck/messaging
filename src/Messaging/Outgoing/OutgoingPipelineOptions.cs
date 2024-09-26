@@ -1,8 +1,6 @@
 ﻿namespace Messaging.Outgoing;
 
-internal class OutgoingPipelineOptions(int batchSize, IEnumerable<Type> messageTypes)
+internal class OutgoingPipelineOptions(int batchSize)
 {
     public int BatchSize { get; } = batchSize;
-
-    public HashSet<Type> MessageTypes { get; } = messageTypes.ToHashSet();
 }

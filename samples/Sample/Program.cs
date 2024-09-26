@@ -1,6 +1,8 @@
 using Messaging;
-using Messaging.Kafka;
-using Sample.Consumers;
+using Messaging.DependencyInjection;
+using Messaging.Kafka.DependencyInjection;
+using Messaging.Outgoing;
+using Microsoft.AspNetCore.Mvc;
 using Sample.Messages;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,19 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMessaging(messaging =>
 {
     messaging.Message<AccountCreatedMessage>("account-created");
-
-    // messaging.Consumer<AccountCreatedConsumer>(consumer => consumer
-    //     .Handles<AccountCreatedMessage>()
-    //     .BoundedCapacity(1000)
-    //     .MaxDegreeOfParallelism(4));
     
     messaging.AddKafka(kafka =>
     {
-        kafka.SendTo("account-created-topic", producer => producer
-            .Handles<AccountCreatedMessage>());
+        kafka.Destination("account-created", producer => producer
+            .Handles<AccountCreatedMessage>()
+            .WithBatchSize(100));
     });
 });
 
 var app = builder.Build();
+
+app.MapPost("/accounts", async (
+    [FromServices] IMessageBus messageBus,
+    [FromBody] AccountCreatedMessage message) =>
+{
+    await messageBus.SendAsync(new OutgoingMessageEnvelope(message));
+
+    return Results.Ok();
+});
 
 app.Run();

@@ -4,15 +4,17 @@ using Messaging.Outgoing;
 
 namespace Messaging.Kafka.Outgoing;
 
-internal class KafkaMessageSender(IProducer<Null, string> producer, KafkaMessageSenderOptions options) : IMessageSender
+internal class KafkaMessageSender(ClientConfig clientConfig, KafkaMessageSenderOptions options) : IMessageSender
 {
+    private readonly IProducer<Null, string> _producer = new ProducerBuilder<Null, string>(clientConfig).Build();
+    
     public async Task SendAsync(IEnumerable<OutgoingMessageEnvelope> envelopes)
     {
         await Task.WhenAll(envelopes.Select(async envelope =>
         {
             try
             {
-                await producer.ProduceAsync(options.Topic, new Message<Null, string>
+                await _producer.ProduceAsync(options.Topic, new Message<Null, string>
                 {
                     Value = JsonSerializer.Serialize(envelope.Message)
                 });
