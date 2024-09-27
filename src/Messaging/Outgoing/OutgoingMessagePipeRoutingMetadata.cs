@@ -1,6 +1,6 @@
 ﻿namespace Messaging.Outgoing;
 
-internal class OutgoingPipelineRoutingMetadata(string? explicitDestination, IEnumerable<Type> messageTypes)
+internal class OutgoingMessagePipeRoutingMetadata(string? explicitDestination, IEnumerable<Type> messageTypes)
 {
     private readonly List<Type> _messageTypes = messageTypes.ToList();
 

@@ -6,7 +6,7 @@ public class OutgoingMessageEnvelope(object message)
 
     internal string? ExplicitDestination { get; private set; }
 
-    internal Dictionary<string, string> Headers { get; } = [];
+    internal Dictionary<string, string?> Headers { get; } = [];
 
     internal TaskCompletionSource TaskCompletionSource { get; } = new();
 

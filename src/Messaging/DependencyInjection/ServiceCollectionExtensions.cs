@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Messaging.Outgoing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.DependencyInjection;
 
@@ -19,11 +20,14 @@ public static class ServiceCollectionExtensions
 
     private static void RegisterServices(IServiceCollection services, MessagingConfiguration configuration)
     {
-        services.AddSingleton(new MessageTypeRegistry(configuration.MessageTypes));
+        var registry = new MessageTypeRegistry(configuration.MessageTypes);
+        
+        services.AddSingleton<IMessageBus, MessageBus>();
+        services.AddSingleton<OutgoingMessageRouter>();
 
         foreach (var transport in configuration.Transports)
         {
-            transport.RegisterServices(services);
+            transport.RegisterServices(services, registry);
         }
     }
 }

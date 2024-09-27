@@ -1,6 +1,11 @@
 @Sample_HostAddress = http://localhost:5252
 
-GET {{Sample_HostAddress}}/weatherforecast/
+POST {{Sample_HostAddress}}/accounts
 Accept: application/json
+Content-Type: application/json
+
+{
+  "accountName": "cody"
+}
 
 ###

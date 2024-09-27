@@ -1,13 +1,17 @@
-﻿using Messaging.DependencyInjection;
+﻿using Confluent.Kafka;
+using Messaging.DependencyInjection;
 using Messaging.Kafka.Outgoing;
 using Messaging.Outgoing;
+using Messaging.Outgoing.Pipeline;
+using Messaging.Outgoing.Sending;
+using Messaging.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.Kafka.DependencyInjection;
 
 internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
 {
-    public void RegisterServices(IServiceCollection services)
+    public void RegisterServices(IServiceCollection services, MessageTypeRegistry registry)
     {
         var clientConfig = configuration.BuildClientConfig();
         
@@ -16,20 +20,22 @@ internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
             var kafkaSenderOptions = new KafkaMessageSenderOptions(destination.Topic);
 
             var kafkaMessageSender = new KafkaMessageSender(
-                clientConfig,
+                new ProducerBuilder<Null, string>(clientConfig).Build(),
                 kafkaSenderOptions);
 
-            var outgoingPipelineRoutingMetadata = new OutgoingPipelineRoutingMetadata(
-                destination.ExplicitDestination,
-                destination.MessageTypes);
-
-            var outgoingPipelineOptions = new OutgoingPipelineOptions(destination.BatchSize);
+            var sendAlgorithm = new BatchSendAlgorithm(
+                kafkaMessageSender,
+                new BatchSendOptions(destination.BatchSize));
             
-            var outgoingPipeline = new OutgoingPipeline(kafkaMessageSender, outgoingPipelineOptions);
-
-            var outgoingPipelineRegistration = new OutgoingPipelineRegistration(
-                outgoingPipeline,
-                outgoingPipelineRoutingMetadata);
+            var outgoingPipelineRegistration = new OutgoingMessagePipeRegistration(
+                new PipeBuilder<OutgoingMessageEnvelope>()
+                    .Use(new TraceFilter())
+                    .Use(new MessageTypeFilter(registry))
+                    .Use(new SendFilter(sendAlgorithm))
+                    .Build(),
+                new OutgoingMessagePipeRoutingMetadata(
+                    destination.ExplicitDestination,
+                    destination.MessageTypes));
             
             services.AddSingleton(outgoingPipelineRegistration);
         }

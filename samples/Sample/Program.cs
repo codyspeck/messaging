@@ -13,13 +13,15 @@ builder.Services.AddMessaging(messaging =>
     
     messaging.AddKafka(kafka =>
     {
-        kafka.Destination("account-created", producer => producer
+        kafka.Destination("account-created-topic", producer => producer
             .Handles<AccountCreatedMessage>()
+            .WithExplicitDestination("account-created-destination")
             .WithBatchSize(100));
     });
 });
 
 var app = builder.Build();
+
 
 app.MapPost("/accounts", async (
     [FromServices] IMessageBus messageBus,

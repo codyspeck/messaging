@@ -1,29 +1,18 @@
 ﻿using System.Threading.Tasks.Dataflow;
 using Messaging.Dataflow;
 
-namespace Messaging.Outgoing;
+namespace Messaging.Outgoing.Sending;
 
-internal class OutgoingPipeline
+internal class BatchSendAlgorithm : ISendAlgorithm
 {
     private readonly ITargetBlock<OutgoingMessageEnvelope> _targetBlock;
 
-    public OutgoingPipeline(IMessageSender sender, OutgoingPipelineOptions options)
+    public BatchSendAlgorithm(IMessageSender sender, BatchSendOptions options)
     {
         var batch = CustomBlocks.TimedBatchBlock<OutgoingMessageEnvelope>(options.BatchSize, Defaults.BatchWaitTime);
 
         var action = new ActionBlock<OutgoingMessageEnvelope[]>(async envelopes =>
-        {
-            try
-            {
-                await sender.SendAsync(envelopes);
-
-                envelopes.TrySetResult();
-            }
-            catch (Exception exception)
-            {
-                envelopes.TrySetException(exception);
-            }
-        });
+            await SendOutgoingMessageEnvelopes(sender, envelopes));
 
         batch.LinkTo(action);
 
@@ -35,5 +24,19 @@ internal class OutgoingPipeline
         await _targetBlock.SendAsync(envelope);
 
         await envelope.TaskCompletionSource.Task;
+    }
+
+    private static async Task SendOutgoingMessageEnvelopes(IMessageSender sender, OutgoingMessageEnvelope[] envelopes)
+    {
+        try
+        {
+            await sender.SendAsync(envelopes);
+
+            envelopes.TrySetResult();
+        }
+        catch (Exception exception)
+        {
+            envelopes.TrySetException(exception);
+        }
     }
 }

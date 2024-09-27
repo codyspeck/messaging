@@ -2,11 +2,11 @@
 
 namespace Messaging;
 
-internal class MessageBus(OutgoingMessageRouter registry) : IMessageBus
+internal class MessageBus(OutgoingMessageRouter router) : IMessageBus
 {
     public async Task SendAsync(OutgoingMessageEnvelope envelope)
     {
-        await registry
+        await router
             .Route(envelope)
             .SendAsync(envelope);
     }

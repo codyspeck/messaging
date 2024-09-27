@@ -19,6 +19,6 @@ public class KafkaConfiguration
 
     public ClientConfig BuildClientConfig()
     {
-        return new ClientConfig();
+        return new ClientConfig { BootstrapServers = "localhost:9092" };
     }
 }
