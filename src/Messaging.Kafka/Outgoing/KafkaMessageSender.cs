@@ -12,6 +12,7 @@ internal class KafkaMessageSender(IProducer<Null, string> producer, KafkaMessage
     {
         await producer.ProduceAsync(options.Topic, new Message<Null, string>
         {
+            Headers = BuildHeaders(envelope),
             Value = JsonSerializer.Serialize(envelope.Message)
         });
     }
@@ -22,16 +23,9 @@ internal class KafkaMessageSender(IProducer<Null, string> producer, KafkaMessage
         {
             try
             {
-                var headers = new Headers();
-
-                foreach (var header in envelope.Headers)
-                {
-                    headers.Add(header.Key, Encoding.ASCII.GetBytes(header.Value ?? string.Empty));
-                }
-                
                 await producer.ProduceAsync(options.Topic, new Message<Null, string>
                 {
-                    Headers = headers,
+                    Headers = BuildHeaders(envelope),
                     Value = JsonSerializer.Serialize(envelope.Message)
                 });
             }
@@ -40,5 +34,17 @@ internal class KafkaMessageSender(IProducer<Null, string> producer, KafkaMessage
                 envelope.TaskCompletionSource.SetException(exception);
             }
         }));
+    }
+
+    private static Headers BuildHeaders(OutgoingMessageEnvelope envelope)
+    {
+        var headers = new Headers();
+        
+        foreach (var header in envelope.Headers)
+        {
+            headers.Add(header.Key, Encoding.ASCII.GetBytes(header.Value ?? string.Empty));
+        }
+
+        return headers;
     }
 }
