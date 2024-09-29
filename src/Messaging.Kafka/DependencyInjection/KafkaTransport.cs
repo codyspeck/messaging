@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Messaging.DependencyInjection;
+using Messaging.Kafka.Incoming;
 using Messaging.Kafka.Outgoing;
 using Messaging.Outgoing;
 using Messaging.Outgoing.Pipeline;
@@ -13,8 +14,15 @@ internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
 {
     public void RegisterServices(IServiceCollection services)
     {
-        var clientConfig = configuration.BuildClientConfig();
+        var clientConfig = new ClientConfig { BootstrapServers = "localhost:9092" };
         
+        RegisterDestinations(services, clientConfig);
+
+        RegisterSources(services, clientConfig);
+    }
+
+    private void RegisterDestinations(IServiceCollection services, ClientConfig clientConfig)
+    {
         foreach (var destination in configuration.Destinations)
         {
             var kafkaSenderOptions = new KafkaMessageSenderOptions(destination.Topic);
@@ -37,6 +45,18 @@ internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
                 new OutgoingMessagePipeRoutingMetadata(
                     destination.ExplicitDestination,
                     destination.MessageTypes)));
+        }
+    }
+
+    private void RegisterSources(IServiceCollection services, ClientConfig clientConfig)
+    {
+        foreach (var source in configuration.Sources)
+        {
+            services.AddSingleton(provider => new KafkaMessagePoller(
+                source.Topic,
+                clientConfig,
+                new ServicePipeBuilder<KafkaConsumeContext>()
+                    .Build(provider)));
         }
     }
 }
