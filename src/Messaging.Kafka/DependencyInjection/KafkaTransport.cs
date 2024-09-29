@@ -11,7 +11,7 @@ namespace Messaging.Kafka.DependencyInjection;
 
 internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
 {
-    public void RegisterServices(IServiceCollection services, MessageTypeRegistry registry)
+    public void RegisterServices(IServiceCollection services)
     {
         var clientConfig = configuration.BuildClientConfig();
         
@@ -26,18 +26,17 @@ internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
             var sendAlgorithm = new BatchSendAlgorithm(
                 kafkaMessageSender,
                 new BatchSendOptions(destination.BatchSize));
-            
-            var outgoingPipelineRegistration = new OutgoingMessagePipeRegistration(
-                new PipeBuilder<OutgoingMessageEnvelope>()
-                    .Use(new TraceFilter())
-                    .Use(new MessageTypeFilter(registry))
+
+            services.AddSingleton(provider => new OutgoingMessagePipeRegistration(
+                new ServicePipeBuilder<OutgoingMessageEnvelope>()
+                    .Use<TraceFilter>()
+                    .Use<MessageTypeFilter>()
+                    .Use<MessageSerializeFilter>()
                     .Use(new SendFilter(sendAlgorithm))
-                    .Build(),
+                    .Build(provider),
                 new OutgoingMessagePipeRoutingMetadata(
                     destination.ExplicitDestination,
-                    destination.MessageTypes));
-            
-            services.AddSingleton(outgoingPipelineRegistration);
+                    destination.MessageTypes)));
         }
     }
 }

@@ -4,5 +4,5 @@ namespace Messaging.DependencyInjection;
 
 internal interface ITransport
 {
-    void RegisterServices(IServiceCollection services, MessageTypeRegistry registry);
+    void RegisterServices(IServiceCollection services);
 }

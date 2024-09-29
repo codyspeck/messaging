@@ -4,6 +4,8 @@ public class OutgoingMessageEnvelope(object message)
 {
     public object Message { get; } = message;
 
+    internal string? MessageSerialized { get; set; }
+
     internal string? ExplicitDestination { get; private set; }
 
     internal Dictionary<string, string?> Headers { get; } = [];

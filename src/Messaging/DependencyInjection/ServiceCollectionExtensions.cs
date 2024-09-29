@@ -1,4 +1,5 @@
 ﻿using Messaging.Outgoing;
+using Messaging.Outgoing.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messaging.DependencyInjection;
@@ -20,14 +21,17 @@ public static class ServiceCollectionExtensions
 
     private static void RegisterServices(IServiceCollection services, MessagingConfiguration configuration)
     {
-        var registry = new MessageTypeRegistry(configuration.MessageTypes);
-        
+        services.AddSingleton(new MessageTypeRegistry(configuration.MessageTypes));
+        services.AddSingleton<IMessageSerializer, DefaultMessageSerializer>();
         services.AddSingleton<IMessageBus, MessageBus>();
         services.AddSingleton<OutgoingMessageRouter>();
+        services.AddSingleton<MessageSerializeFilter>();
+        services.AddSingleton<MessageTypeFilter>();
+        services.AddSingleton<TraceFilter>();
 
         foreach (var transport in configuration.Transports)
         {
-            transport.RegisterServices(services, registry);
+            transport.RegisterServices(services);
         }
     }
 }
