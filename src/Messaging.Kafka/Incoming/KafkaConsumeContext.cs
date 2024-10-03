@@ -2,11 +2,7 @@
 
 namespace Messaging.Kafka.Incoming;
 
-internal class KafkaConsumeContext(ConsumeResult<Null, string> result)
+internal class KafkaConsumeContext(ConsumeResult<Null, string> consumeResult)
 {
-    public string Message { get; } = result.Message.Value;
-
-    public Dictionary<string, string?> Headers = result.Message.Headers.ToDictionary(
-        a => a.Key,
-        a => a.GetValueBytes().ToString());
+    public ConsumeResult<Null, string> ConsumeResult { get; } = consumeResult;
 }

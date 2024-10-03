@@ -10,6 +10,8 @@ services:
   
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
     ports:
       - 9999:8080
     environment:

@@ -1,12 +1,14 @@
 ﻿using Confluent.Kafka;
 using Messaging.DependencyInjection;
 using Messaging.Kafka.Incoming;
+using Messaging.Kafka.Incoming.Pipeline;
 using Messaging.Kafka.Outgoing;
 using Messaging.Outgoing;
 using Messaging.Outgoing.Pipeline;
 using Messaging.Outgoing.Sending;
 using Messaging.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Messaging.Kafka.DependencyInjection;
 
@@ -50,12 +52,15 @@ internal class KafkaTransport(KafkaConfiguration configuration) : ITransport
 
     private void RegisterSources(IServiceCollection services, ClientConfig clientConfig)
     {
+        services.AddSingleton<ConsumeFilter>();
+        
         foreach (var source in configuration.Sources)
         {
-            services.AddSingleton(provider => new KafkaMessagePoller(
+            services.AddSingleton<IHostedService>(provider => new KafkaMessagePoller(
                 source.Topic,
                 clientConfig,
                 new ServicePipeBuilder<KafkaConsumeContext>()
+                    .Use<ConsumeFilter>()
                     .Build(provider)));
         }
     }

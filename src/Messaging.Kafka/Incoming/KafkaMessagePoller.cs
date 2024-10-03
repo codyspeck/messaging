@@ -13,14 +13,22 @@ internal class KafkaMessagePoller(string topic, ClientConfig clientConfig, IPipe
         // This is necessary because the Kafka SDK's "Consume" method is synchronous. 
         await Task.Yield();
 
-        using var consumer = new ConsumerBuilder<Null, string>(clientConfig).Build();
+        var consumerConfig = new ConsumerConfig(clientConfig)
+        {
+            GroupId = "default",
+            EnableAutoOffsetStore = false
+        };
+
+        var oi = new OffsetCoordinator();
+        
+        using var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build();
         
         consumer.Subscribe(topic);
         
         while (!stoppingToken.IsCancellationRequested)
         {
             var consumeResult = consumer.Consume(stoppingToken);
-
+            
             await pipe.SendAsync(new KafkaConsumeContext(consumeResult));
         }
     }

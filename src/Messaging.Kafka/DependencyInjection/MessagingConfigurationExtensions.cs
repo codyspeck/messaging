@@ -9,11 +9,8 @@ public static class MessagingConfigurationExtensions
         Action<KafkaConfiguration> configurator)
     {
         var kafkaConfiguration = new KafkaConfiguration();
-
-        configurator(kafkaConfiguration);
-        
+        configurator.Invoke(kafkaConfiguration);
         messagingConfiguration.Transports.Add(new KafkaTransport(kafkaConfiguration));
-
         return messagingConfiguration;
     }    
 }

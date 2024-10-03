@@ -1,35 +1,28 @@
-using Messaging;
 using Messaging.DependencyInjection;
 using Messaging.Kafka.DependencyInjection;
-using Messaging.Outgoing;
-using Microsoft.AspNetCore.Mvc;
-using Sample.Messages;
+using Sample.Features.CreateAccount;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMessaging(messaging =>
 {
-    messaging.Message<AccountCreatedMessage>("account-created");
+    messaging.AddMessage<CreateAccountMessage>("account-created");
+
+    messaging.AddConsumer<CreateAccountConsumer>(consumer => consumer
+        .HandlesMessage<CreateAccountMessage>());
     
     messaging.AddKafka(kafka =>
     {
-        kafka.Destination("account-created-topic", producer => producer
-            .Handles<AccountCreatedMessage>()
-            .WithExplicitDestination("account-created-destination")
+        kafka.AddDestination("account-created-topic", producer => producer
+            .HandlesMessage<CreateAccountMessage>()
             .WithBatchSize(100));
+
+        kafka.AddSource("account-created-topic", _ => { });
     });
 });
 
 var app = builder.Build();
 
-
-app.MapPost("/accounts", async (
-    [FromServices] IMessageBus messageBus,
-    [FromBody] AccountCreatedMessage message) =>
-{
-    await messageBus.SendAsync(new OutgoingMessageEnvelope(message));
-
-    return Results.Ok();
-});
+app.MapCreateAccountEndpoint();
 
 app.Run();

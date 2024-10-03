@@ -3,14 +3,14 @@
 namespace Messaging.Incoming.Pipeline;
 
 internal class DeserializeFilter(IMessageSerializer serializer, MessageTypeRegistry registry)
-    : IPipe<IncomingMessageEnvelope>
+    : IFilter<IncomingMessageEnvelope>
 {
-    public Task SendAsync(IncomingMessageEnvelope context)
+    public async Task InvokeAsync(IncomingMessageEnvelope context, RequestDelegate next)
     {
         var messageType = context.ExplicitMessageType ?? registry.Get(context.Headers[MessageHeaders.MessageType]!).MessageType;
 
-        context.Message = serializer.Deserialize(context.MessageSerialized!, messageType);
+        context.Message = serializer.Deserialize(context.SerializedMessage, messageType);
 
-        return Task.CompletedTask;
+        await next();
     }
 }

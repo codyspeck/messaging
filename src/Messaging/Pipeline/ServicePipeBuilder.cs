@@ -18,6 +18,12 @@ internal class ServicePipeBuilder<TContext>
         return this;
     }
     
+    public ServicePipeBuilder<TContext> Use(Func<IServiceProvider, IFilter<TContext>> factory)
+    {
+        _filterFactories.Add(factory.Invoke);
+        return this;
+    }
+    
     public IPipe<TContext> Build(IServiceProvider services)
     {
         return new Pipe<TContext>(_filterFactories.Select(factory => factory(services)));

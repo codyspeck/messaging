@@ -13,9 +13,11 @@ public class KafkaDestinationConfiguration
     
     internal int BatchSize { get; private set; } = 1;
 
+    internal int BatchWaitTimeInMilliseconds { get; private set; } = 1;
+
     internal List<Type> MessageTypes { get; } = [];
 
-    public KafkaDestinationConfiguration Handles<TMessage>()
+    public KafkaDestinationConfiguration HandlesMessage<TMessage>()
     {
         MessageTypes.Add(typeof(TMessage));
         return this;
@@ -24,6 +26,12 @@ public class KafkaDestinationConfiguration
     public KafkaDestinationConfiguration WithBatchSize(int batchSize)
     {
         BatchSize = batchSize;
+        return this;
+    }
+
+    public KafkaDestinationConfiguration WithBatchWaitTimeInMilliseconds(int batchWaitTimeInMilliseconds)
+    {
+        BatchWaitTimeInMilliseconds = batchWaitTimeInMilliseconds;
         return this;
     }
     
